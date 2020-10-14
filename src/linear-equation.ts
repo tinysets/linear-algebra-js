@@ -76,5 +76,71 @@ export function solveLinearEquation(coefficientMatrix: number[][], constants: nu
             }
         }
     }
+
+    for (let i = 0; i < coefficientMatrix.length; i++) {
+        let row = i;
+        let zeroRow = true;
+        for (let col = 0; col < unknowCount; col++) {
+            if (coefficientMatrix[row][col] != 0) {// 主元
+                zeroRow = false;
+                break;
+            }
+        }
+        if (zeroRow) {
+            if (constants[row] != 0) {
+                return;// 无解
+            }
+        }
+    }
+
+    let mainCellRows = [];// 主元所在的行
+    for (let col = 0; col < unknowCount; col++) {
+        mainCellRows[col] = -1;
+    }
+
+    for (let i = 0; i < coefficientMatrix.length; i++) {
+        let row = i;
+        for (let col = 0; col < unknowCount; col++) {
+            if (coefficientMatrix[row][col] != 0) {// 主元
+                mainCellRows[col] = row;
+                break;
+            }
+        }
+    }
+
+    let newFreeVector = () => {
+        let ret: number[] = [];
+        for (let i = 0; i < unknowCount; i++) {
+            ret[i] = 0;
+        }
+        return ret;
+    }
+
+    let resultVectors: number[][] = [];
+    {
+        let specialVector = newFreeVector();
+        for (let c = 0; c < unknowCount; c++) {
+            const mainCellRow = mainCellRows[c];
+            if (mainCellRow != -1) {
+                specialVector[c] = constants[mainCellRow];
+            }
+        }
+        resultVectors.push(specialVector);
+    }
+    for (let col = 0; col < unknowCount; col++) {
+        const row = mainCellRows[col];
+        if (row == -1) {// free cell  自由变量
+            let freeVector = newFreeVector();
+            for (let c = 0; c < unknowCount; c++) {
+                const mainCellRow = mainCellRows[c];
+                if (mainCellRow != -1) {
+                    freeVector[c] = -coefficientMatrix[mainCellRow][col];
+                }
+            }
+            freeVector[col] = 1;
+            resultVectors.push(freeVector);
+        }
+    }
+
     return;
 }
