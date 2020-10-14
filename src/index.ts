@@ -7,5 +7,5 @@ setTimeout(() => {
         [3, 0, 1],
     ];
     let consts = [7, 3, 7];
-    solveLinearEquation(mat, consts);
+    solveLinearEquation(mat, consts); // [2,-3,1]
 }, 1000);
