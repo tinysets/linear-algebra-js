@@ -1,4 +1,4 @@
-import { lu, solveLinearEquation } from "./linear-equation";
+import { lu, solveLinearEquation } from "./linear-algebra";
 
 setTimeout(() => {
     // let mat = [

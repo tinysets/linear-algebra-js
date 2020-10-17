@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-const linear_equation_1 = require("./linear-equation");
+const linear_algebra_1 = require("./linear-algebra");
 setTimeout(() => {
     // let mat = [
     //     [2, -1, 0],
@@ -29,7 +29,7 @@ setTimeout(() => {
         [0, 0, 0, 0],
     ];
     let consts = [1, 0];
-    linear_equation_1.solveLinearEquation(mat, consts);
+    linear_algebra_1.solveLinearEquation(mat, consts);
     // let lu_mat = [
     //     [1, 2, 1],
     //     [2, 3, 2],
@@ -44,6 +44,6 @@ setTimeout(() => {
         [2, 2, 1],
         [3, 2, 0],
     ];
-    linear_equation_1.lu(lu_mat);
+    linear_algebra_1.lu(lu_mat);
 }, 1000);
 //# sourceMappingURL=index.js.map

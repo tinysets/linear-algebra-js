@@ -1,8 +1,8 @@
 {
-  "name": "linear-equation",
+  "name": "linear-algebra",
   "version": "1.0.0",
   "description": "",
-  "main": "dist/linear-equation.js",
+  "main": "dist/linear-algebra.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },

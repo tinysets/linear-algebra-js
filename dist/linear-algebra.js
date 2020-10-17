@@ -273,4 +273,4 @@ function lu(A) {
     }
 }
 exports.lu = lu;
-//# sourceMappingURL=linear-equation.js.map
+//# sourceMappingURL=linear-algebra.js.map
