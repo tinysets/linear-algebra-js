@@ -89,22 +89,18 @@ function equal(A, B) {
     return JSON.stringify(A) == JSON.stringify(B);
 }
 function solveLinearEquation(coefficientMatrix, constants) {
-    let order = coefficientMatrix.length;
-    if (order != constants.length || order == 0) {
+    let rows = getRows(coefficientMatrix);
+    let cols = getCols(coefficientMatrix);
+    if (rows == 0 || cols == 0 || constants.length != rows) {
         return; // 参数不合法
-    }
-    for (const row of coefficientMatrix) {
-        if (order != row.length) {
-            return; // 参数不合法
-        }
     }
     let findMaxRow = (row, col) => {
         let maxRow = row;
         let max = Math.abs(coefficientMatrix[row][col]);
-        for (let i = row + 1; i < order; i++) {
-            if (Math.abs(coefficientMatrix[i][col]) > max) {
-                max = Math.abs(coefficientMatrix[i][col]);
-                maxRow = i;
+        for (let r = row + 1; r < rows; r++) {
+            if (Math.abs(coefficientMatrix[r][col]) > max) {
+                max = Math.abs(coefficientMatrix[r][col]);
+                maxRow = r;
             }
         }
         return maxRow;
@@ -122,94 +118,90 @@ function solveLinearEquation(coefficientMatrix, constants) {
     };
     let rowDiv = (row, col) => {
         let divBy = coefficientMatrix[row][col];
-        for (let c = col; c < order; c++) {
+        for (let c = col; c < cols; c++) {
             coefficientMatrix[row][c] = coefficientMatrix[row][c] / divBy;
         }
         constants[row] = constants[row] / divBy;
     };
     let setOtherRowZero = (row, col) => {
-        for (let r = 0; r < order; r++) {
+        for (let r = 0; r < rows; r++) {
             if (r == row) {
                 continue;
             }
             if (coefficientMatrix[r][col] != 0) {
                 let mul = -coefficientMatrix[r][col];
-                for (let c = col; c < order; c++) {
+                for (let c = col; c < cols; c++) {
                     coefficientMatrix[r][c] = coefficientMatrix[r][c] + mul * coefficientMatrix[row][c];
                 }
                 constants[r] = constants[r] + mul * constants[row];
             }
         }
     };
-    for (let i = 0; i < order; i++) {
-        let row = i;
-        for (let col = i; col < order; col++) {
-            let maxRow = findMaxRow(row, col);
-            swapRow(row, maxRow);
-            if (coefficientMatrix[row][col] != 0) { // 主元
-                rowDiv(row, col);
-                setOtherRowZero(row, col);
+    for (let r = 0; r < rows; r++) {
+        for (let c = r; c < cols; c++) {
+            let maxRow = findMaxRow(r, c);
+            swapRow(r, maxRow);
+            if (coefficientMatrix[r][c] != 0) { // 主元
+                rowDiv(r, c);
+                setOtherRowZero(r, c);
                 break;
             }
         }
     }
-    for (let i = 0; i < order; i++) {
-        let row = i;
+    for (let r = 0; r < rows; r++) {
         let zeroRow = true;
-        for (let col = 0; col < order; col++) {
-            if (coefficientMatrix[row][col] != 0) { // 主元
+        for (let c = 0; c < cols; c++) {
+            if (coefficientMatrix[r][c] != 0) { // 主元
                 zeroRow = false;
                 break;
             }
         }
         if (zeroRow) {
-            if (constants[row] != 0) {
-                return; // 无解
+            if (constants[r] != 0) {
+                return null; // 无解
             }
         }
     }
-    let mainCellRows = []; // 主元所在的行
-    for (let col = 0; col < order; col++) {
-        mainCellRows[col] = -1;
+    let pivotRowIndexs = []; // 主元所在的行
+    for (let c = 0; c < cols; c++) {
+        pivotRowIndexs[c] = -1;
     }
-    for (let i = 0; i < order; i++) {
-        let row = i;
-        for (let col = 0; col < order; col++) {
-            if (coefficientMatrix[row][col] != 0) { // 主元
-                mainCellRows[col] = row;
+    for (let r = 0; r < rows; r++) {
+        for (let c = 0; c < cols; c++) {
+            if (coefficientMatrix[r][c] != 0) { // 主元
+                pivotRowIndexs[c] = r;
                 break;
             }
         }
     }
     let newFreeVector = () => {
         let ret = [];
-        for (let i = 0; i < order; i++) {
-            ret[i] = 0;
+        for (let c = 0; c < cols; c++) {
+            ret[c] = 0;
         }
         return ret;
     };
     let resultVectors = [];
     {
         let specialVector = newFreeVector();
-        for (let c = 0; c < order; c++) {
-            const mainCellRow = mainCellRows[c];
-            if (mainCellRow != -1) {
-                specialVector[c] = constants[mainCellRow];
+        for (let c = 0; c < cols; c++) {
+            const pivotRow = pivotRowIndexs[c];
+            if (pivotRow != -1) {
+                specialVector[c] = constants[pivotRow];
             }
         }
         resultVectors.push(specialVector);
     }
-    for (let col = 0; col < order; col++) {
-        const row = mainCellRows[col];
-        if (row == -1) { // free cell  自由变量
+    for (let c = 0; c < cols; c++) {
+        if (pivotRowIndexs[c] == -1) { // free variable 自由变量
             let freeVector = newFreeVector();
-            for (let c = 0; c < order; c++) {
-                const mainCellRow = mainCellRows[c];
-                if (mainCellRow != -1) {
-                    freeVector[c] = -coefficientMatrix[mainCellRow][col];
+            for (let cc = 0; cc < cols; cc++) {
+                const pivotRow = pivotRowIndexs[cc];
+                if (pivotRow != -1) {
+                    freeVector[cc] = -coefficientMatrix[pivotRow][c];
                 }
             }
-            freeVector[col] = 1;
+            freeVector[c] = 1;
             resultVectors.push(freeVector);
         }
     }
