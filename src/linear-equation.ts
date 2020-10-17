@@ -83,14 +83,10 @@ function transpose(A: number[][]): number[][] {
     let rows = getRows(A);
     let cols = getCols(A);
 
-    if (rows != cols) {
-        throw new Error("矩阵不是方阵");
-    }
-
-    let result = identity(rows, cols);
+    let result = identity(cols, rows);
     for (let row = 0; row < rows; row++) {
         for (let col = 0; col < cols; col++) {
-            result[row][col] = A[col][row];
+            result[col][row] = A[row][col];
         }
     }
     return result;
@@ -254,12 +250,7 @@ export function lu(A: number[][]) {
 
     let P = identity(rows, rows);
     let L = identity(rows, rows);
-    let U = identity(rows, cols);
-    for (let row = 0; row < rows; row++) {
-        for (let col = 0; col < cols; col++) {
-            U[row][col] = A[row][col];
-        }
-    }
+    let U = copy(A);
 
     let findMaxRow = (row: number, col: number) => {
         let maxRow = row;
