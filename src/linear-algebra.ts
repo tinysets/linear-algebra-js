@@ -307,3 +307,68 @@ export function lu(A: number[][]) {
         return { P: P_inv, L, U };
     }
 }
+
+
+export function rref(A: number[][]) {
+    let R = copy(A);
+    let rows = getRows(R);
+    let cols = getCols(R);
+
+    let findMaxRow = (row: number, col: number) => {
+        let maxRow = row;
+        let max = Math.abs(R[row][col]);
+        for (let i = row + 1; i < rows; i++) {
+            if (Math.abs(R[i][col]) > max) {
+                max = Math.abs(R[i][col]);
+                maxRow = i;
+            }
+        }
+        return maxRow;
+    }
+
+    let swapRow = (rowA: number, rowB: number) => {
+        if (rowA == rowB) {
+            return;
+        }
+
+        let tmpRow = R[rowA];
+        R[rowA] = R[rowB];
+        R[rowB] = tmpRow;
+    }
+
+    let rowDiv = (row: number, col: number) => {
+        let divBy = R[row][col];
+        for (let c = col; c < cols; c++) {
+            R[row][c] = R[row][c] / divBy;
+        }
+    }
+
+    let setOtherRowZero = (row: number, col: number) => {
+        for (let r = 0; r < rows; r++) {
+            if (r == row) {
+                continue;
+            }
+            if (R[r][col] != 0) {
+                let mul = -R[r][col];
+                for (let c = col; c < cols; c++) {
+                    R[r][c] = R[r][c] + mul * R[row][c];
+                }
+            }
+        }
+    }
+
+    for (let r = 0, c = 0; r < rows && c < cols;) {
+        let maxRow = findMaxRow(r, c);
+        swapRow(r, maxRow);
+        if (R[r][c] != 0) {
+            rowDiv(r, c);
+            setOtherRowZero(r, c);
+            r++;
+            c++;
+        } else {
+            c++;
+        }
+    }
+
+    return R;
+}

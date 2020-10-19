@@ -1,4 +1,4 @@
-import { lu, solveLinearEquation } from "./linear-algebra";
+import { lu, rref, solveLinearEquation } from "./linear-algebra";
 
 setTimeout(() => {
     // let mat = [
@@ -50,5 +50,12 @@ setTimeout(() => {
         [3, 2, 0],
     ];
     lu(lu_mat);
+
+
+    let rref_mat = [
+        [2, 2, 1],
+        [3, 2, 0],
+    ];
+    rref(rref_mat);
 
 }, 1000);

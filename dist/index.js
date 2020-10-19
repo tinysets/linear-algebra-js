@@ -45,5 +45,10 @@ setTimeout(() => {
         [3, 2, 0],
     ];
     linear_algebra_1.lu(lu_mat);
+    let rref_mat = [
+        [2, 2, 1],
+        [3, 2, 0],
+    ];
+    linear_algebra_1.rref(rref_mat);
 }, 1000);
 //# sourceMappingURL=index.js.map
