@@ -96,6 +96,54 @@ function equal(A: number[][], B: number[][]) {
     return JSON.stringify(A) == JSON.stringify(B);
 }
 
+function length(v: number[]) {
+    let l = 0;
+    for (const num of v) {
+        l += num * num;
+    }
+    return l;
+}
+
+const EPSILON = 0.00001;
+
+function isZeroVector(v: number[]) {
+    return length(v) <= EPSILON;
+}
+
+function getColumnVector(A: number[][], c: number) {
+    let v: number[] = [];
+
+    for (const row of A) {
+        v.push(row[c])
+    }
+
+    return v
+}
+
+function dot(v1: number[], v2: number[]) {
+    let result = 0;
+    for (let i = 0; i < v1.length; i++) {
+        result += v1[i] * v2[i];
+    }
+    return result;
+}
+
+
+function number_mul_vector(n: number, vector: number[]) {
+    let result = [];
+    for (let i = 0; i < vector.length; i++) {
+        result.push(vector[i] * n);
+    }
+    return result;
+}
+
+function vector_sub(v1: number[], v2: number[]) {
+    let result = [];
+    for (let i = 0; i < v1.length; i++) {
+        result.push(v1[i] - v2[i]);
+    }
+    return result;
+}
 
 
 
@@ -371,4 +419,38 @@ export function rref(A: number[][]) {
     }
 
     return R;
+}
+
+
+// 列空间 的正交化
+export function Gram_Schmidt_Orthogonalization(A: number[][]) {
+    let rows = getRows(A);
+    let cols = getCols(A);
+
+    let basis: number[][] = [];
+    for (let c = 0; c < cols; c++) {
+        let v = getColumnVector(A, c);
+        if (!isZeroVector(v)) {
+            let v_cpoy = copy(v);
+            for (const b of basis) {
+                let b_norm = number_mul_vector(1 / dot(b, b), b);
+                let projection_len = dot(v, b);
+                let project_vector = number_mul_vector(projection_len, b_norm);
+                v_cpoy = vector_sub(v_cpoy, project_vector);
+            }
+            if (!isZeroVector(v_cpoy)) {
+                basis.push(v_cpoy);
+            }
+        }
+    }
+
+    for (let i = 1; i < basis.length; i++) {
+        for (let j = 0; j < i; j++) {
+            if (!(dot(basis[i], basis[j]) <= EPSILON)) {
+                throw new Error("斯密特正交化不正确");
+            }
+        }
+    }
+
+    return basis;
 }

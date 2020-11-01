@@ -1,4 +1,4 @@
-import { lu, rref, solveLinearEquation } from "./linear-algebra";
+import { Gram_Schmidt_Orthogonalization, lu, rref, solveLinearEquation } from "./linear-algebra";
 
 setTimeout(() => {
     // let mat = [
@@ -57,5 +57,11 @@ setTimeout(() => {
         [3, 2, 0],
     ];
     rref(rref_mat);
+
+    let Gram_Schmidt_mat = [
+        [2, 2, 1],
+        [3, 2, 0],
+    ];
+    Gram_Schmidt_Orthogonalization(Gram_Schmidt_mat);
 
 }, 1000);

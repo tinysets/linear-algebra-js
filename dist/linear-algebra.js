@@ -88,6 +88,45 @@ function transpose(A) {
 function equal(A, B) {
     return JSON.stringify(A) == JSON.stringify(B);
 }
+function length(v) {
+    let l = 0;
+    for (const num of v) {
+        l += num * num;
+    }
+    return l;
+}
+const EPSILON = 0.00001;
+function isZeroVector(v) {
+    return length(v) <= EPSILON;
+}
+function getColumnVector(A, c) {
+    let v = [];
+    for (const row of A) {
+        v.push(row[c]);
+    }
+    return v;
+}
+function dot(v1, v2) {
+    let result = 0;
+    for (let i = 0; i < v1.length; i++) {
+        result += v1[i] * v2[i];
+    }
+    return result;
+}
+function number_mul_vector(n, vector) {
+    let result = [];
+    for (let i = 0; i < vector.length; i++) {
+        result.push(vector[i] * n);
+    }
+    return result;
+}
+function vector_sub(v1, v2) {
+    let result = [];
+    for (let i = 0; i < v1.length; i++) {
+        result.push(v1[i] - v2[i]);
+    }
+    return result;
+}
 function solveLinearEquation(coefficientMatrix, constants) {
     let rows = getRows(coefficientMatrix);
     let cols = getCols(coefficientMatrix);
@@ -331,4 +370,34 @@ function rref(A) {
     return R;
 }
 exports.rref = rref;
+// 列空间 的正交化
+function Gram_Schmidt_Orthogonalization(A) {
+    let rows = getRows(A);
+    let cols = getCols(A);
+    let basis = [];
+    for (let c = 0; c < cols; c++) {
+        let v = getColumnVector(A, c);
+        if (!isZeroVector(v)) {
+            let v_cpoy = copy(v);
+            for (const b of basis) {
+                let b_norm = number_mul_vector(1 / dot(b, b), b);
+                let projection_len = dot(v, b);
+                let project_vector = number_mul_vector(projection_len, b_norm);
+                v_cpoy = vector_sub(v_cpoy, project_vector);
+            }
+            if (!isZeroVector(v_cpoy)) {
+                basis.push(v_cpoy);
+            }
+        }
+    }
+    for (let i = 1; i < basis.length; i++) {
+        for (let j = 0; j < i; j++) {
+            if (!(dot(basis[i], basis[j]) <= EPSILON)) {
+                throw new Error("斯密特正交化不正确");
+            }
+        }
+    }
+    return basis;
+}
+exports.Gram_Schmidt_Orthogonalization = Gram_Schmidt_Orthogonalization;
 //# sourceMappingURL=linear-algebra.js.map
